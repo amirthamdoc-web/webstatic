@@ -1,0 +1,33 @@
+name: Build site
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amirtham-static-site
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+
+      - name: Show what was built
+        run: find . -name index.html -not -path "./node_modules/*"
+
+      - name: Save build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: amirtham-static-site/dist
+          if-no-files-found: error
